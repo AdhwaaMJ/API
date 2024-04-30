@@ -1,6 +1,8 @@
 plugins {
-    alias(libs.plugins.androidApplication)
-    alias(libs.plugins.jetbrainsKotlinAndroid)
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.jetbrains.kotlin.android)
+    id("com.google.dagger.hilt.android")
+    kotlin("kapt")
 }
 
 android {
@@ -18,8 +20,8 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
-        val TMDB_API_KEY =properties["TMDB_API_KEY"]
-        buildConfigField("String","TMDB_API_KEY","\"$TMDB_API_KEY\"")
+        val TDMB_API_KEY =properties["TDMB_API_KEY"]
+        buildConfigField("String","TDMB_API_KEY","\"$TDMB_API_KEY\"")
     }
 
     buildTypes {
@@ -70,4 +72,40 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+
+    //hilt
+    implementation(libs.hilt.android)
+    kapt(libs.hilt.android.compiler)
+
+
+//    implementation("com.google.dagger:hilt-android:2.48.1")
+//    kapt("com.google.dagger:hilt-android-compiler:2.48.1")
+
+    //retrofit
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
+    implementation( libs.okhttp)
+    implementation(libs.logging.interceptor)
+    // KotlinX Serialization
+    implementation(libs.kotlinx.serialization.json)
+    implementation(libs.retrofit2.kotlinx.serialization.converter)
+
+    //json
+    implementation (libs.gson)
+
+    //coroutines
+    implementation (libs.kotlinx.coroutines.core)
+    implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.kotlinx.coroutines.android)
+
+    //glide
+    implementation (libs.glide)
+    implementation (libs.compose)
+
+    //coil
+    implementation (libs.coil.compose)
+
+    //paging
+    implementation(libs.androidx.paging.runtime)
+    implementation(libs.androidx.paging.compose)
 }
