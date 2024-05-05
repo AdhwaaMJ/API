@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
@@ -41,6 +42,7 @@ import androidx.navigation.NavHostController
 import com.project.api.R
 import com.project.api.presentation.navigation.AppScreen
 import com.project.api.presentation.navigation.popUpToTop
+import com.project.api.ui.theme.DarkGreenBlue
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -103,51 +105,56 @@ fun OnBoardingScreen(onBoardingViewModel: OnBoardingViewModel, navController: Na
 @Composable
 fun ScreenOne(){
     
-    Column(
+    Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.primaryContainer),
-        verticalArrangement = Arrangement.spacedBy(20.dp)
+            .background(DarkGreenBlue),
+        contentAlignment = Alignment.BottomCenter
 
 
     ) {
 
+
         Box(modifier = Modifier
             .fillMaxWidth()
-            .fillMaxHeight(0.4f)
-            .padding(20.dp)
+            .height(10.dp)
+            .rotate(-90f)
             .paint(
-                painterResource(id = R.drawable.movie_night_amico),
-                contentScale = ContentScale.FillBounds,
+                painterResource(id = R.drawable.brutalist_10),
+                contentScale = ContentScale.FillWidth,
                 sizeToIntrinsics = false
-            )
+            ))
+
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(10.dp)
+                .padding(20.dp)
+                .paint(
+                    painterResource(id = R.drawable.movie_night_amico),
+                    contentScale = ContentScale.FillBounds,
+                    sizeToIntrinsics = false
+                )
         )
 
-        Text(text = "Welcome to CineSpectra!",
+        Text(
+            text = "Welcome to CineSpectra!",
             fontSize = 30.sp,
             textAlign = TextAlign.Center,
-            fontWeight = FontWeight.Bold)
+            fontWeight = FontWeight.Bold
+        )
 
 
 
-        Text(text =
-        "Explore the latest movies, reserve the perfect seats, " +
-                "and experience the cinema in a whole new way.",
-        fontSize= 15.sp, textAlign = TextAlign.Center)
+        Text(
+            text =
+            "Explore the latest movies, reserve the perfect seats, " +
+                    "and experience the cinema in a whole new way.",
+            fontSize = 15.sp, textAlign = TextAlign.Center
+        )
 
 
-
-        Box(modifier = Modifier
-            .fillMaxSize()
-            .fillMaxWidth()
-            .rotate(-90.0f)
-            .align(Alignment.End)
-            .paint(
-                painterResource(id = R.drawable.brutalist_10)
-            )
-            )
     }
-
 }
 
 

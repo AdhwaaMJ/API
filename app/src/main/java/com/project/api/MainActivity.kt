@@ -3,122 +3,107 @@ package com.project.api
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Icon
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.MutableIntState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.paint
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavController
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
-import com.bumptech.glide.integration.compose.GlideImage
-import com.project.api.Constant.MOVIE_IMAGE_BASE_URL
-import com.project.api.model.BackdropSize
-import com.project.api.model.SearchResponse
-import com.project.api.model.UIState
+import com.project.api.presentation.navigation.AppScreen
+import com.project.api.presentation.navigation.BottomNavigationItem
 import com.project.api.presentation.navigation.NavGraph
+import com.project.api.presentation.navigation.popUpToTop
 import com.project.api.ui.theme.APITheme
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-    @OptIn(ExperimentalGlideComposeApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-
+            AppScreen.MainScreen
             APITheme {
-                NavGraph()
-//                val viewModel by viewModels<PopularMoviesViewModel> ()
-//                when(val result = viewModel.popularMoviesState.value){
-//                    is UIState.Success -> {
-//                        Box(
-//                            modifier = Modifier
-//                                .fillMaxSize()
-//                                .background(MaterialTheme.colorScheme.primaryContainer)
-//                        ) {
-//                            Box(modifier = Modifier
-//                                .fillMaxWidth()
-//                                .fillMaxHeight(0.4f)
-//                                .background(MaterialTheme.colorScheme.primaryContainer)
-//                                .paint(
-//                                    painterResource(id = R.drawable.background),
-//                                    contentScale = ContentScale.FillBounds,
-//                                    sizeToIntrinsics = false
-//                                )
-//                            )
-//                            LazyColumn(
-//                                modifier = Modifier.fillMaxSize()
-//                            ) {
-//                                item {
-//////                                    Image(painter = painterResource(id = R.drawable.ic_launcher_foreground),
-//////                                        contentDescription = "fil image"
-////                                    )
-//                                }
-//                                items(result.data?.results.orEmpty()){
-//                                    GlideImage(model = "${MOVIE_IMAGE_BASE_URL}${BackdropSize.w300}/${it.posterPath}",
-//                                        contentDescription = "",
-//                                        modifier = Modifier
-//                                            .padding(12.dp)
-//                                    )
-//                                    Text(
-//                                        text =it.title.orEmpty(),
-//                                        modifier = Modifier.padding(bottom = 8.dp)
-//                                    )
-//                                }
-//
-//                            }
-//
-////                        }
-//
-//
-//                    }
-//
-//                    is UIState.Empty -> {}
-//                    is UIState.Error -> {}
-//                    is UIState.Loading -> {}
-//                }
+                val navController  = rememberNavController()
 
+                var showBottomBar by rememberSaveable { mutableStateOf(true) }
+                val navBackStackEntry by navController.currentBackStackEntryAsState()
 
-//                when(val result = viewModel.popularMoviesState.value){
-//                    is UIState.Success -> {
-//                        LazyColumn(modifier = Modifier
-//                            .fillMaxSize()
-//                            .background(MaterialTheme.colorScheme.primary)) {
-//                            items(result.data?.results.orEmpty()) {
-//                                Text(
-//                                    text =it.title.orEmpty(),
-//                                    modifier = Modifier.padding(12.dp))
-//                            }
-//
-//                        }
-//                    }
-//                    is UIState.Empty -> {}
-//                    is UIState.Error -> {}
-//                    is UIState.Loading -> {}
+                showBottomBar = when(navBackStackEntry?.destination?.route){
+                    AppScreen.OnboardingScreen.rout -> false
+                    else -> true
                 }
-            }
 
+                val navigationSelectedItem = rememberSaveable {
+                    mutableIntStateOf(0)
+                }
 
+                Scaffold(
+                    modifier = Modifier.fillMaxSize(),
+                    bottomBar = {
+                        if (showBottomBar){
+                            NavigationBar {
+                                BottomNavigationBar(navigationSelectedItem , navController)
+                            }
 
+                        }
+                    }
+                ) {paddingValues ->
+                    Box(modifier = Modifier.padding(paddingValues)) {
+                        NavGraph(navController)
+                    }
 
+                }
 
             }
         }
+    }
+}
+
+@Composable
+private fun RowScope.BottomNavigationBar(
+    navigationSelectedItem: MutableIntState,
+    navController: NavHostController
+){
+    BottomNavigationItem().bottomNavigationItems()
+        .forEachIndexed { index, navigationItem ->
+
+            NavigationBarItem(
+                selected = index == navigationSelectedItem.intValue,
+                label = {
+                    Text(navigationItem.label)
+                },
+                icon = {
+                       Icon(navigationItem.icon,
+                           contentDescription = navigationItem.label )
+                       },
+                onClick = {
+                          navigationSelectedItem.intValue = index
+                    navController.navigate(navigationItem.route){
+                        popUpToTop(navController)
+                    } },
+
+
+                )
+        }
+
+
+}
 
 
 
@@ -139,61 +124,56 @@ fun GreetingPreview() {
     }
 }
 
-@OptIn(ExperimentalGlideComposeApi::class)
-@Composable
-fun MainScreen(
-    navController: NavController,
-    popularMoviesState: MutableState<UIState<SearchResponse>>
-){
-    when(val result = popularMoviesState.value){
-        is UIState.Success -> {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(MaterialTheme.colorScheme.primaryContainer)
-            ) {
-                Box(modifier = Modifier
-                    .fillMaxWidth()
-                    .fillMaxHeight(0.4f)
-                    .background(MaterialTheme.colorScheme.primaryContainer)
-                    .paint(
-                        painterResource(id = R.drawable.background),
-                        contentScale = ContentScale.FillBounds,
-                        sizeToIntrinsics = false
-                    )
-                )
-                LazyColumn(
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    item {
-////                                    Image(painter = painterResource(id = R.drawable.ic_launcher_foreground),
-////                                        contentDescription = "fil image"
-//                                    )
-                    }
-                    items(result.data?.results.orEmpty()){
-                        GlideImage(model = "${MOVIE_IMAGE_BASE_URL}${BackdropSize.w300}/${it.posterPath}",
-                            contentDescription = "",
-                            modifier = Modifier
-                                .padding(12.dp)
-                        )
-                        Text(
-                            text =it.title.orEmpty(),
-                            modifier = Modifier.padding(bottom = 8.dp)
-                        )
-                    }
-
-                }
-
-            }
-
-
-        }
-
-        is UIState.Empty -> {}
-        is UIState.Error -> {}
-        is UIState.Loading -> {}
-    }
-
-}
-
-
+//@Composable
+//fun MainScreen(
+//    navController: NavController,
+//    popularMoviesState: MutableState<UIState<SearchResponse>>
+//){
+//    val moviePagingItems = popularMoniesState.collectAsLazyPagingItems()
+//    Box {
+//        LazyVerticalGrid(
+//            columns = GridCells.Fixed(3),
+//            modifier = Modifier.fillMaxSize(),
+//            verticalArrangement = Arrangement.Center,
+//            horizontalArrangement = Arrangement.Center) {
+//            items(moviePagingItems.itemCount) {index ->
+//                if (moviePagingItems[index]?.adult==false){
+//                    AsyncImage(model = "${MOVIE_IMAGE_BASE_URL}${BackdropSize.w300}/${moviePagingItems[index]?.posterPath}",
+//                        contentDescription = "",
+//                        modifier = Modifier
+//                            .padding(2.dp),
+//                        contentScale = ContentScale.FillWidth,
+//                        error = painterResource(id = R.drawable.),
+//                        placeholder = painterResource(id = )
+//                    )
+//                }
+//
+//            }
+//
+//        }
+//        moviePagingItems.apply {
+//            when{
+//                loadState.refresh is LoadState.Loading ->{
+//                    Row(
+//                        Modifier.fillMaxSize(),
+//                        horizontalArrangement = Arrangement.CenterVertically
+//                    ){
+//                        CircularProgressIndicator()
+//                    }
+//                }
+//
+//                loadState.append is LoadState.Error ->{
+//                    val error = moviePagingItems.loadState.append as LoadState.Error
+//                    Text(
+//                        text = error.error.localizedMessage.orEmpty(),
+//                        modifier = Modifier,
+//                    )
+//                }
+//
+//            }
+//        }
+//    }
+//
+//}
+//
+//
