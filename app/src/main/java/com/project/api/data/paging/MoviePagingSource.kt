@@ -2,22 +2,28 @@ package com.project.api.data.paging
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
-import com.project.api.BuildConfig
 import com.project.api.data.remote.MovieApi
 import com.project.api.model.Results
 import okio.IOException
 
 class MoviePagingSource(
-    private  val movieApi: MovieApi,
+    private val movieApi: MovieApi,
+    private val isSearchEndPoint: Boolean,
+    private val searchQuery: String? = null
 ) : PagingSource<Int, Results>() {
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int,Results>{
         return try {
             val currentPage = params.key ?:1
-            val movies = movieApi.getUpcoming(
-                apiKey = BuildConfig.TDMB_API_KEY,
-                page = currentPage
-            )
+            val movies = if (isSearchEndPoint)
+                movieApi.getSearchMovies(
+                    page = currentPage,
+                    query = searchQuery.orEmpty(),
+                    )
+            else
+                movieApi.getUpcoming(
+                    page = currentPage
+                )
             LoadResult.Page(
                 data = movies.body()?.results.orEmpty(),
                 prevKey =if (currentPage == 1) null else currentPage -1 ,
@@ -34,3 +40,4 @@ class MoviePagingSource(
         return state.anchorPosition
     }
 }
+

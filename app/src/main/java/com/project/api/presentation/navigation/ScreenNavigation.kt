@@ -10,9 +10,15 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.NavOptionsBuilder
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
+import com.project.api.presentation.screens.Details.MoviesDetailsScreen
+import com.project.api.presentation.screens.Details.MoviesDetailsViewModel
+import com.project.api.presentation.screens.Search.SearchScreen
+import com.project.api.presentation.screens.Search.SearchViewModel
 import com.project.api.presentation.screens.onBoarding.OnBoardingScreen
 import com.project.api.presentation.screens.onBoarding.OnBoardingViewModel
 import com.project.api.presentation.screens.popular.MainScreen
@@ -23,10 +29,16 @@ sealed class AppScreen(val rout: String) {
     object MainScreen : AppScreen("mainScreen")
     object OnboardingScreen:AppScreen("OnBoarding")
 
-    object Home : AppScreen("popular_movie_screen")
+    object Home : AppScreen("mainScreen")
 
     object Search : AppScreen ("search_route")
     object Profile : AppScreen ("profile_route")
+
+    object MoviesDetailsScreen: AppScreen ("MoviesDetailsScreen")
+
+//    object SearchScreen: AppScreen ("SearchScreen")
+
+
 }
 
 data class BottomNavigationItem(
@@ -38,7 +50,7 @@ data class BottomNavigationItem(
         return  listOf(
             BottomNavigationItem(
                 label = "Home",
-                icon = Icons.Filled.Search,
+                icon = Icons.Filled.Home,
                 route = AppScreen.Home.rout
             ),
             BottomNavigationItem(
@@ -75,7 +87,22 @@ fun NavGraph(
         composable(AppScreen.MainScreen.rout){
             val viewModel = hiltViewModel<PopularMoviesViewModel>()
             MainScreen(navController,viewModel.popularMoviesState)
+        }
 
+        composable("${AppScreen.MoviesDetailsScreen.rout}/{id}", arguments = listOf(
+            navArgument("id"){
+                type = NavType.IntType
+            }
+        )){
+            val viewModel = hiltViewModel<MoviesDetailsViewModel>()
+            MoviesDetailsScreen(int = it.arguments?.getInt("id"), viewModel = viewModel)
+        }
+
+        composable(AppScreen.Search.rout){
+            val viewModel = hiltViewModel<SearchViewModel>()
+            SearchScreen(navController,viewModel.moviesState){
+                viewModel.searchInMovies(it)
+            }
         }
     }
 }
@@ -83,26 +110,12 @@ fun NavGraph(
 fun NavOptionsBuilder.popUpToTop(navController: NavController){
     popUpTo(navController.currentBackStackEntry?.destination?.route?: return){
         inclusive =true
+        saveState = true
     }
 }
 
 
 
 
-//fun NavGraph(navController: NavHostController = rememberNavController()) {
-//
-//    NavHost(navController = navController, startDestination = Screen.OnboardingScreen.rout) {
-//        composable(Screen.OnboardingScreen.rout){
-//            OnBoardingScreen(navController)
-//        }
-//        composable(Screen.endOfONboardingScreen.rout) {
-//            ScreenThree(navController)
-//        }
-//        composable(Screen.mainScreen.rout) {
-//            MainScreen()
-//        }
-//
-//    }
-//
-//}
+
 

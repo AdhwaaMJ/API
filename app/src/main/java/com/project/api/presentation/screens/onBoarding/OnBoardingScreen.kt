@@ -47,9 +47,9 @@ import com.project.api.ui.theme.DarkGreenBlue
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun OnBoardingScreen(onBoardingViewModel: OnBoardingViewModel, navController: NavHostController) {
-    val onBoardingCombleted by onBoardingViewModel.onBoardingCompleted.collectAsState()
+    val onBoardingCompleted by onBoardingViewModel.onBoardingCompleted.collectAsState()
 
-    if (onBoardingCombleted){
+    if (onBoardingCompleted){
         navController.navigate(AppScreen.MainScreen.rout){
             popUpToTop(navController)
         }

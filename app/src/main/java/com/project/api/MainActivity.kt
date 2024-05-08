@@ -37,7 +37,6 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            AppScreen.MainScreen
             APITheme {
                 val navController  = rememberNavController()
 
@@ -96,7 +95,11 @@ private fun RowScope.BottomNavigationBar(
                           navigationSelectedItem.intValue = index
                     navController.navigate(navigationItem.route){
                         popUpToTop(navController)
-                    } },
+                        restoreState = true
+                        launchSingleTop = true
+
+                     }
+                          },
 
 
                 )
