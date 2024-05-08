@@ -1,5 +1,7 @@
 package com.project.api.data.di
 
+import android.content.Context
+import com.chuckerteam.chucker.api.ChuckerInterceptor
 import com.google.gson.Gson
 import com.project.api.Constant.MOVIE_BASE_URL
 import com.project.api.Constant.MOVIE_IMAGE_BASE_URL
@@ -7,6 +9,7 @@ import com.project.api.data.remote.MovieApi
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
@@ -31,9 +34,11 @@ object NetworkModule {
     @Provides
     @Singleton
     fun provideOkHttpClient(
+        @ApplicationContext context: Context
     ): OkHttpClient {
         val httpclient = OkHttpClient.Builder()
             .connectTimeout(120L, TimeUnit.SECONDS)
+            .addInterceptor(ChuckerInterceptor(context))
             .readTimeout(120L, TimeUnit.SECONDS)
             .writeTimeout(120L, TimeUnit.SECONDS)
         return httpclient.build()

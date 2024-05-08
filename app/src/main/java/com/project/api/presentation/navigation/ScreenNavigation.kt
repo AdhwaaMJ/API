@@ -4,8 +4,12 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
@@ -17,6 +21,8 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.project.api.presentation.screens.Details.MoviesDetailsScreen
 import com.project.api.presentation.screens.Details.MoviesDetailsViewModel
+import com.project.api.presentation.screens.Profile.ProfileScreen
+import com.project.api.presentation.screens.Profile.UserProfileViewModel
 import com.project.api.presentation.screens.Search.SearchScreen
 import com.project.api.presentation.screens.Search.SearchViewModel
 import com.project.api.presentation.screens.onBoarding.OnBoardingScreen
@@ -25,7 +31,7 @@ import com.project.api.presentation.screens.popular.MainScreen
 import com.project.api.presentation.screens.popular.PopularMoviesViewModel
 
 sealed class AppScreen(val rout: String) {
-    object endOfONboardingScreen : AppScreen("EndOfOnBoarding")
+//    object endOfONboardingScreen : AppScreen("EndOfOnBoarding")
     object MainScreen : AppScreen("mainScreen")
     object OnboardingScreen:AppScreen("OnBoarding")
 
@@ -73,12 +79,17 @@ data class BottomNavigationItem(
 
 @Composable
 fun NavGraph(
-    navController: NavHostController = rememberNavController()
+    navController: NavHostController = rememberNavController(),
+    popularMoviesViewModel: PopularMoviesViewModel
+
 ){
     val onBoardingViewModel: OnBoardingViewModel = hiltViewModel()
     NavHost(
         navController = navController,
-        startDestination = onBoardingViewModel.startDestination
+        startDestination = AppScreen.MainScreen.rout,//onBoardingViewModel.startDestination
+        modifier = Modifier.semantics {
+         contentDescription = AppScreen.MainScreen.rout
+        }
     ){
         composable(AppScreen.OnboardingScreen.rout){
             OnBoardingScreen(onBoardingViewModel,navController)
@@ -103,6 +114,11 @@ fun NavGraph(
             SearchScreen(navController,viewModel.moviesState){
                 viewModel.searchInMovies(it)
             }
+        }
+
+        composable(AppScreen.Profile.rout){
+            val viewModel = hiltViewModel<UserProfileViewModel>()
+            ProfileScreen(viewModel , navController )
         }
     }
 }

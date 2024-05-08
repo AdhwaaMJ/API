@@ -21,6 +21,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
@@ -29,6 +30,7 @@ import com.project.api.presentation.navigation.AppScreen
 import com.project.api.presentation.navigation.BottomNavigationItem
 import com.project.api.presentation.navigation.NavGraph
 import com.project.api.presentation.navigation.popUpToTop
+import com.project.api.presentation.screens.Profile.ProfileScreen
 import com.project.api.ui.theme.APITheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -64,7 +66,7 @@ class MainActivity : ComponentActivity() {
                     }
                 ) {paddingValues ->
                     Box(modifier = Modifier.padding(paddingValues)) {
-                        NavGraph(navController)
+                        NavGraph(navController, viewModel())
                     }
 
                 }
