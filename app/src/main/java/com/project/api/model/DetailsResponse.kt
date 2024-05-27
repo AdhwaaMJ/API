@@ -1,5 +1,6 @@
 package com.project.api.model
 
+import android.provider.MediaStore.Audio.Genres
 import com.google.gson.annotations.SerializedName
 
 data class DetailsResponse(
@@ -8,7 +9,7 @@ data class DetailsResponse(
     @SerializedName ("backdrop_path") var backdrop_path: String? = null,
     @SerializedName ("belongs_to_collection") var belongs_to_collection: String? = null,
     @SerializedName ("budget") var budget: Double? = null,
-    @SerializedName ("genres") var genres: ArrayList<Int> = arrayListOf(),
+    @SerializedName ("genres") var genres: ArrayList<Genres> = arrayListOf(),
     @SerializedName ("homepage") var homepage: String? = null,
     @SerializedName ("id") var id: Int? = null,
     @SerializedName ("imdb_id") var imdb_id: String? = null,
